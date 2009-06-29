@@ -3,19 +3,25 @@ package org.synth.intercept;
 import java.lang.instrument.UnmodifiableClassException;
 import java.lang.reflect.InvocationHandler;
 
+
 /**
  * The main interface to the Native Interceptor library.
  */
 public class NativeInterceptor
 {
-    static final Class<NativeInterceptorAgent> AGENT_CLASS = NativeInterceptorAgent.class;
-
     /**
+     * Indicate that a class should have its native methods intercepted and delegated to the
+     * supplied invocation handler.
      *
-     * @param type
-     * @param handler
-     * @throws IllegalArgumentException
-     * @throws IllegalStateException
+     * Note: The {@link InvocationHandler} interface is intended for use in Java dynamic proxies
+     *       and is not designed to handle static method invocations. However some of the native
+     *       methods intercepted may be static. In those cases, the first argument of type Object
+     *       will be passed the class that declares the static method.
+     *
+     * @param type The type whose native methods should be intercepted.
+     * @param handler The handler to delegate the intercepted methods to.
+     * @throws IllegalArgumentException When the type is null.
+     * @throws IllegalStateException When the class has not previously been transformed to
      */
     public static void intercept(final Class<?> type, final InvocationHandler handler) throws IllegalArgumentException, IllegalStateException
     {
