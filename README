@@ -1,0 +1,13 @@
+NativeIntercept is a small library that uses bytecode generation to instrument classes with native
+methods to allow those methods to be handled by java code rather than native code.
+
+Notes:
+- This is currently pre-alpha. It's had limited testing and mostly works, but there's probably a lot
+  of bugs.
+- This requires Java 1.6 or higher. While the Java agent functionality was available in Java 1.5,
+  this library uses the Instrumentation#setNativePrefix method which was added in 1.6.
+- This library uses the excellent ASM bytecode manipulation library. That project can be found at:
+  http://asm.ow2.org
+  This also uses the JarJar library to package the version of asm that's expected in the
+  distribution jar without conflicting with another version of the library that may be on the
+  classpath. That project can be found at: http://code.google.com/p/jarjar/
