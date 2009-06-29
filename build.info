@@ -1,0 +1,10 @@
+Copyright (c) 2009, Tim Blair
+Available build targets:
+  info        => Print this message.
+  build       => Build all java source files.
+  test-build  => Build all java test files.
+  test-run    => Build all java test files and run all unit tests.
+  clean       => Remove all compiled files.
+  jar         => Build all files and create a development jar file.
+  dist        => Build all files, run all tests and create the distribution jar files.
+  dist-clean  => Remove all generated files.
