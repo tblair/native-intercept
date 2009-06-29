@@ -1,0 +1,21 @@
+=Usage:=
+
+In order to intercept native methods, the _NativeInterceptorAgent_ must be attached prior to loading the classes with native methods. This can be accomplished in two ways...
+
+===Attaching via VM arguments===
+
+`> java -javaagent:path/to/native-interceptor-`_version_`.jar -classpath ...:path/to/native-interceptor-`_version_`.jar com.example.YourClass`
+
+(note: the native-interceptor jar is both a classpath entry and the -javaagent VM arg...this may not be strictly necessary, but this is what has been tested)
+
+===Attaching to a running VM===
+
+  * Add `native-interceptor-`_version_`.jar` to the classpath.
+  * Call `NativeInterceptorAgent.enable();` prior to loading any classes that need to be intercepted.
+
+=FAQ:=
+
+  # What can I do with NativeInterceptor?
+    Intercept native methods prior to invoking native code. This is useful in situations where you do not have the native code available (`*`cough`*`GWT`*`cough`*`) or in tests for code that depends on native code when the test covers only the Java portion of the code.
+  # I get an exception that tells me to check the documentation, what's wrong?
+    That means the agent was not applied prior to the loading of the class that needs to be intercepted. The documentation is not very thorough, but the above usage instructions cover this subject briefly.
