@@ -12,11 +12,15 @@ public class NativeInvocationHandler
 
     public static void registerHandler(final Class<?> type, final InvocationHandler handler)
     {
+        if (type == null)
+            return;
         NativeInvocationHandler.HANDLERS.put(type, handler);
     }
 
     public static void unregisterHandler(final Class<?> type)
     {
+        if (type == null)
+            return;
         NativeInvocationHandler.HANDLERS.remove(type);
     }
 
