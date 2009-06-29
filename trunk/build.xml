@@ -1,0 +1,86 @@
+<project default="info">
+
+	<loadfile property="version" srcfile="build.version"/>
+	<property file="build.properties"/>
+
+	<!--
+	    Print usage information for this build file.
+	  -->
+	<target name="info">
+		<loadfile property="info" srcfile="build.info"/>
+		<echo message="NativeInterceptor ${version}"/>
+		<echo message="${info}"/>
+	</target>
+
+	<path id="jarjar.cp">
+		<fileset dir="${lib}" includes="**/jarjar*.jar"/>
+	</path>
+
+	<path id="main.build.cp">
+		<fileset dir="${lib}" includes="**/asm*.jar"/>
+	</path>
+
+	<path id="test.build.cp">
+		<path refid="main.build.cp"/>
+		<pathelement location="${main-build}"/>
+		<pathelement location="${junit-jar}"/>
+	</path>
+
+	<path id="test.run.cp">
+		<pathelement path="test.build.cp"/>
+		<pathelement location="${test-build}"/>
+	</path>
+
+	<taskdef name="jarjar" classname="com.tonicsystems.jarjar.JarJarTask" classpathref="jarjar.cp"/>
+
+	<target name="build">
+		<mkdir dir="${main-build}"/>
+		<javac srcdir="${main-src}" destdir="${main-build}" classpathref="main.build.cp"
+		       debug="${javac-debug}" optimize="${javac-optimize}"
+			   source="${javac-source}" target="${javac-target}"/>
+	</target>
+
+	<target name="test-build" depends="build">
+		<mkdir dir="${test-build}"/>
+		<javac srcdir="${test-src}" destdir="${test-build}" classpathref="test.build.cp"
+               debug="${javac-debug}" optimize="${javac-optimize}"
+               source="${javac-source}" target="${javac-target}"/>
+	</target>
+
+	<target name="test-run" depends="build,test-build">
+    </target>
+
+	<target name="clean">
+		<delete dir="${main-build}"/>
+		<delete dir="${test-build}"/>
+	</target>
+
+	<target name="jar" depends="build">
+        <mkdir dir="${dist}"/>
+		<jarjar destfile="${dev-jar}" basedir="${main-build}" manifest="${resources}/META-INF/MANIFEST.MF">
+            <zipfileset src="${lib}/asm-${asm-version}.jar"/>
+            <zipfileset src="${lib}/asm-commons-${asm-version}.jar"/>
+			<rule pattern="org.objectweb.**" result="org.synth.@1"/>
+	    </jarjar>
+	</target>
+
+	<!--
+	    Create the distribution jar files
+	  -->
+	<target name="dist" depends="dist-clean,build,test-build,test-run">
+		<mkdir dir="${dist}"/>
+        <jarjar destfile="${jar}" basedir="${main-build}" manifest="${resources}/META-INF/MANIFEST.MF">
+        	<fileset dir="${resources}">
+        		<include name="META-INF/*LICENSE*"/>
+        	</fileset>
+            <zipfileset src="${lib}/asm-${asm-version}.jar"/>
+            <zipfileset src="${lib}/asm-commons-${asm-version}.jar"/>
+            <rule pattern="org.objectweb.**" result="org.synth.@1"/>
+        </jarjar>
+	</target>
+
+	<target name="dist-clean" depends="clean">
+		<delete dir="${dist}"/>
+    </target>
+	
+</project>
