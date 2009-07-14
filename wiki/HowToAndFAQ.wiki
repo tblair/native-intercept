@@ -19,5 +19,7 @@ In order to intercept native methods, the `NativeInterceptorAgent` must be attac
     Intercept native methods prior to invoking native code. This is useful in situations where you do not have the native code available (`*`cough`*`GWT`*`cough`*`) or in tests for code that depends on native code when the test covers only the Java portion of the code.
   # I get an exception that tells me to check the documentation, what's wrong?
     That means the agent was not applied prior to the loading of the class that needs to be intercepted. The documentation is not very thorough, but the above usage instructions cover this subject briefly.
+  # I get the error: `java.lang.NoClassDefFoundError: com/sun/tools/attach/...`
+    This library uses APIs included in the `tools.jar` jar file included with the Windows and Linux JDKs (`JDK_HOME/lib/tools.jar`) and that jar is likely missing from the classpath. This does not apply to OS X JDKs as the APIs in the `tools.jar` are packaged in the main `classes.jar` file.
   # Why does `NativeInterceptor` require Java 1.6?
     While the Java agent functionality was added in Java 1.5, the ability to add a native prefix was added in 1.6. Without this ability, it would not be possible to wrap native methods and still have them resolve to native code when not intercepting. It may be possible to wrap the call to set the native prefix in a check for the VM's version, but that has not been done yet.
