@@ -35,7 +35,7 @@ public class NativeInterceptorAgent
      * prefixes for classes that should not be instrumented.
      */
     private static final Set<String> EXCLUDED_PREFIXES = new HashSet<String>(Arrays.asList(
-        "java", "javax.", "com/sun", "sun", "org/w3c", "org/xml"
+        "java", "javax", "com/sun", "sun", "org/w3c", "org/xml"
     ));
 
     /**
