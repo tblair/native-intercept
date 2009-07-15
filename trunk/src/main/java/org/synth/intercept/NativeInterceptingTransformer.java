@@ -54,7 +54,7 @@ public class NativeInterceptingTransformer implements ClassFileTransformer
             final NativeInterceptingClassAdapter adapter =
                 new NativeInterceptingClassAdapter(writer, Type.getType(classBeingRedefined));
             // Run the class through the adapter
-            reader.accept(adapter, 0);
+            reader.accept(adapter, ClassReader.EXPAND_FRAMES);
             // Check to see if the transformation found any valid targets. Returning null here
             // signals that no changes were made.
             return adapter.intercepted() ? writer.toByteArray() : null;
