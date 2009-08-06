@@ -1,3 +1,5 @@
+#summary HowTo and FAQ
+
 =Usage:=
 
 In order to intercept native methods, the `NativeInterceptorAgent` must be attached prior to loading the classes with native methods. This can be accomplished in two ways...
