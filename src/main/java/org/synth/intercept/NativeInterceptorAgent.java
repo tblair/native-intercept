@@ -39,6 +39,13 @@ public class NativeInterceptorAgent
     ));
 
     /**
+     * A cache of the the Java version. Since
+     * {@link Instrumentation#setNativeMethodPrefix(ClassFileTransformer,String)} is only available
+     * in Java 1.6 or later, Java 1.5 requires a work around.
+     */
+    public static int JAVA_VERSION = System.getProperty("java.version").charAt(2) - '0';
+
+    /**
      * By loading these classes with the agent, they won't pass through the class transformers.
      */
     @SuppressWarnings("unused")
@@ -91,9 +98,24 @@ public class NativeInterceptorAgent
         // note: the wrapper transformer must be added before setNativeMethodPrefix is called.
         instrumentation.addTransformer(wrapper, false);
         instrumentation.addTransformer(interceptor, true);
-        // tell the jvm what the prefix for wrapped native methods is.
-        instrumentation.setNativeMethodPrefix(wrapper, Constants.NATIVE_METHOD_PREFIX);
+        // only call setNativeMethodPrefix when the JVM version is 6 or later.
+        if (NativeInterceptorAgent.JAVA_VERSION >= 6)
+        {
+            // tell the jvm what the prefix for wrapped native methods is.
+            instrumentation.setNativeMethodPrefix(wrapper, Constants.NATIVE_METHOD_PREFIX);
+        }
     }
+
+    /**
+     * Called to register the prefixed method to the original function pointer from the native code.
+     *
+     * @param symbol The symbol in the native code representing the function pointer to assign to
+     *               the indicated method.
+     * @param type The type of the class defining the native method.
+     * @param name The name of the native method.
+     * @param signature The signature of the native method.
+     */
+    public static native void registerNativePrefix(String symbol, Class<?> type, String name, String signature);
 
     /**
      * A method to determine whether a className is part of an excluded package.
