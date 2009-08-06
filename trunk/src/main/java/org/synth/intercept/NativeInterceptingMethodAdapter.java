@@ -121,7 +121,6 @@ public class NativeInterceptingMethodAdapter extends GeneratorAdapter
             Method.getMethod("short handleStaticShort(Class,String,Class[],Object[])");
         NativeInterceptingMethodAdapter.STATIC_HANDLERS[Type.VOID] =
             Method.getMethod("void handleStaticVoid(Class,String,Class[],Object[])");
-
     };
 
     /**
@@ -248,7 +247,29 @@ public class NativeInterceptingMethodAdapter extends GeneratorAdapter
             // Push the index into the array onto the stack.
             super.push(i);
             // Push the argumentType onto the stack.
-            super.visitLdcInsn(this.argTypes[i]);
+            switch (this.argTypes[i].getSort())
+            {
+                // Object types can simply use LDC
+                case Type.ARRAY:
+                case Type.OBJECT:
+                    super.visitLdcInsn(this.argTypes[i]);
+                    break;
+                // Primitive types need to be fetched from the static .TYPE reference on the
+                // Wrapper type
+                case Type.BOOLEAN:
+                case Type.BYTE:
+                case Type.CHAR:
+                case Type.DOUBLE:
+                case Type.FLOAT:
+                case Type.INT:
+                case Type.LONG:
+                case Type.SHORT:
+                case Type.VOID:
+                    super.getStatic(Constants.WRAPPER_TYPES[this.argTypes[i].getSort()], "TYPE", Constants.CLASS_TYPE);
+                    break;
+            }
+            // Push the argumentType onto the stack.
+//            super.visitLdcInsn(this.argTypes[i]);
             // Store the argument type in the array.
             super.visitInsn(Opcodes.AASTORE);
         }

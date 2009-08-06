@@ -80,4 +80,23 @@ public class Constants
      * Type for the {@link WasNative} annotation.
      */
     public static final Type WAS_NATIVE_TYPE = Type.getType(WasNative.class);
+
+    /**
+     * An array of Type references for the wrapper types of the Java primitives keyed by the
+     * {@link Type#getSort()}.
+     */
+    public static final Type[] WRAPPER_TYPES = new Type[11];
+    static
+    {
+        Constants.WRAPPER_TYPES[Type.BOOLEAN] = Type.getType(Boolean.class);
+        Constants.WRAPPER_TYPES[Type.BYTE] = Type.getType(Byte.class);
+        Constants.WRAPPER_TYPES[Type.CHAR] = Type.getType(Character.class);
+        Constants.WRAPPER_TYPES[Type.DOUBLE] = Type.getType(Double.class);
+        Constants.WRAPPER_TYPES[Type.FLOAT] = Type.getType(Float.class);
+        Constants.WRAPPER_TYPES[Type.INT] = Type.getType(Integer.class);
+        Constants.WRAPPER_TYPES[Type.LONG] = Type.getType(Long.class);
+        Constants.WRAPPER_TYPES[Type.SHORT] = Type.getType(Short.class);
+        Constants.WRAPPER_TYPES[Type.VOID] = Type.getType(Void.class);
+    }
+
 }
