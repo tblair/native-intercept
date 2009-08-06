@@ -183,17 +183,27 @@ public class NativeInvocationHandler
 
     private static final Method findMethod(final Class<?> type, final String name, final Class<?>[] argTypes)
     {
-        try
+        Class<?> search = type;
+        IllegalStateException ex = null;
+        while (search != null && !NativeInterceptorAgent.isExcluded(search.getName()))
         {
-            return type.getDeclaredMethod(name, argTypes);
+            try
+            {
+                if (search.getAnnotation(HasInterceptedNatives.class) != null)
+                    return search.getDeclaredMethod(name, argTypes);
+            }
+            catch (final SecurityException e)
+            {
+                if (ex == null)
+                    ex = new IllegalStateException("Security exception thrown while determining proxied native method", e);
+            }
+            catch (final NoSuchMethodException e)
+            {
+                if (ex == null)
+                    ex = new IllegalStateException("Attempt to intercept non-existent native method", e);
+            }
+            search = search.getSuperclass();
         }
-        catch (final SecurityException e)
-        {
-            throw new IllegalStateException("Security exception thrown while determining proxied native method", e);
-        }
-        catch (final NoSuchMethodException e)
-        {
-            throw new IllegalStateException("Attempt to intercept non-existent native method", e);
-        }
+        throw ex == null ? new IllegalStateException("Unable to determine native method") : ex;
     }
 }

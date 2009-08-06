@@ -62,9 +62,13 @@ public class NativeInterceptor
             if (interceptInherited)
             {
                 Class<?> cls = type;
-                while (cls != null && cls.getAnnotation(HasNatives.class) != null)
+                while (cls != null && !NativeInterceptorAgent.isExcluded(cls.getName()))
                 {
-                    NativeInterceptorAgent.getInstrumentation().retransformClasses(cls);
+                    if (cls.getAnnotation(HasNatives.class) != null)
+                    {
+                        NativeInterceptorAgent.getInstrumentation().retransformClasses(cls);
+                        NativeInvocationHandler.registerHandler(cls, handler);
+                    }
                     cls = cls.getSuperclass();
                 }
             }
@@ -77,6 +81,5 @@ public class NativeInterceptor
         {
             throw new IllegalStateException("Unable to intercept native method...see documentation for details", e);
         }
-        NativeInvocationHandler.registerHandler(type, handler);
     }
 }
