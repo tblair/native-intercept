@@ -167,6 +167,12 @@ public class NativeInterceptingMethodAdapter extends GeneratorAdapter
     private boolean shouldTransform = false;
 
     /**
+     * Whether this method has already been trasnformed. This is triggered by the presence of the
+     * {@link Intercepted}
+     */
+    private boolean transformed = false;
+
+    /**
      * Create a new {@link NativeInterceptingMethodAdapter} to transform a possible wrapped native
      * method. When the method adapted is not a wrapped native method, this adapter should make no
      * changes.
@@ -189,12 +195,13 @@ public class NativeInterceptingMethodAdapter extends GeneratorAdapter
         this.name = name;
         this.returnType = Type.getReturnType(desc);
         this.argTypes = Type.getArgumentTypes(desc);
-        this.exceptions = new Type[exceptions == null ? 1 : exceptions.length + 1];
+        this.exceptions = new Type[exceptions == null ? 2 : exceptions.length + 2];
         if (exceptions != null)
             for (int i = 0; i < exceptions.length; i++)
                 this.exceptions[i] = Type.getType('L' + exceptions[i] + ';');
-        // Add the implicit runtime exception
-        this.exceptions[this.exceptions.length - 1] = Constants.RUNTIME_EXCEPTION_TYPE;
+        // Add the implicit runtime exception and error
+        this.exceptions[this.exceptions.length - 2] = Constants.RUNTIME_EXCEPTION_TYPE;
+        this.exceptions[this.exceptions.length - 1] = Constants.ERROR_TYPE;
     }
 
     @Override
@@ -202,18 +209,22 @@ public class NativeInterceptingMethodAdapter extends GeneratorAdapter
     {
         if (Constants.WAS_NATIVE_DESCRIPTOR.equals(desc))
             this.shouldTransform = true;
+        if (Constants.INTERCEPTED_DESCRIPTOR.equals(desc))
+            this.transformed = true;
         return super.visitAnnotation(desc, visible);
     }
 
     @Override
     public void visitMethodInsn(final int opcode, final String owner, final String name, final String desc)
     {
-        // Return quickly if this method is not annotated with the @WasNative annotation.
-        if (!this.shouldTransform)
+        // Return quickly if this method is annotated with this @Intercepted annotation or is not annotated
+        // with the @WasNative annotation.
+        if (this.transformed || !this.shouldTransform)
         {
             super.visitMethodInsn(opcode, owner, name, desc);
             return;
         }
+        System.out.println("Transforming to intercept: " + this.type + '#' + this.name);
         // Tell the parent that the bytecode is modified to intercept the native method.
         this.parent.setIntercepted();
         // Add the @Intercepted annotation to indicate that the method is intercepted.
@@ -268,8 +279,6 @@ public class NativeInterceptingMethodAdapter extends GeneratorAdapter
                     super.getStatic(Constants.WRAPPER_TYPES[this.argTypes[i].getSort()], "TYPE", Constants.CLASS_TYPE);
                     break;
             }
-            // Push the argumentType onto the stack.
-//            super.visitLdcInsn(this.argTypes[i]);
             // Store the argument type in the array.
             super.visitInsn(Opcodes.AASTORE);
         }
@@ -294,12 +303,12 @@ public class NativeInterceptingMethodAdapter extends GeneratorAdapter
         // Cycle through the exceptions to see if there is an exception type that can be re-thrown
         // Without violating the contract of the native method (i.e. either a declared exception
         // or a RuntimeException).
-        for (int i = 0; i < this.exceptions.length; i++)
+        for (Type exception : this.exceptions)
         {
             // Push the exception onto the stack.
             super.visitVarInsn(Opcodes.ALOAD, exceptionVarIdx);
             // Do the instanceof check.
-            super.instanceOf(this.exceptions[i]);
+            super.instanceOf(exception);
             // Create the label to jump to when instanceof is false.
             final Label lnotinstanceof = new Label();
             // Jump to that label if the instanceof is false.
@@ -307,7 +316,7 @@ public class NativeInterceptingMethodAdapter extends GeneratorAdapter
             // Push the exception back onto the stack.
             super.visitVarInsn(Opcodes.ALOAD, exceptionVarIdx);
             // Cast it.
-            super.checkCast(this.exceptions[i]);
+            super.checkCast(exception);
             // Throw it.
             super.throwException();
             // Mark the jump target when not equal.

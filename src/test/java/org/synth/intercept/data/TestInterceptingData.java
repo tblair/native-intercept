@@ -5,11 +5,11 @@ import java.lang.reflect.InvocationHandler;
 import java.util.EmptyStackException;
 
 import org.synth.intercept.HasNatives;
-import org.synth.intercept.TestInstrumentation;
+import org.synth.intercept.InstrumentationTest;
 import org.synth.intercept.WasNative;
 
 /**
- * Compiled version of this class serves as input data for {@link TestInstrumentation} when testing
+ * Compiled version of this class serves as input data for {@link InstrumentationTest} when testing
  * the intercepting transformation of wrapped native methods. This class is the source code
  * transformation that corresponds to the bytecode transformation applied during the native
  * wrapping process.

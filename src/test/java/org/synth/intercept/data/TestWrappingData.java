@@ -4,10 +4,10 @@ import java.io.IOException;
 import java.lang.reflect.InvocationHandler;
 import java.util.EmptyStackException;
 
-import org.synth.intercept.TestInstrumentation;
+import org.synth.intercept.InstrumentationTest;
 
 /**
- * Compiled version of this class serves as input data for {@link TestInstrumentation} when testing
+ * Compiled version of this class serves as input data for {@link InstrumentationTest} when testing
  * the native wrapping transformation.
  */
 public class TestWrappingData

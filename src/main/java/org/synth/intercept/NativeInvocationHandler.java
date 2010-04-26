@@ -52,7 +52,7 @@ public class NativeInvocationHandler
         final InvocationHandler handler = NativeInvocationHandler.HANDLERS.get(type);
         if (handler == null)
             throw new UnsatisfiedLinkError(method.toString());
-        return NativeInvocationHandler.typeCheck(returnType, handler.invoke(null, method, args == null ? NativeInvocationHandler.EMPTY_ARGS : args));
+        return NativeInvocationHandler.typeCheck(returnType, handler.invoke(type, method, args == null ? NativeInvocationHandler.EMPTY_ARGS : args));
     }
 
     public static boolean handleBoolean(final Object instance, final String name, final Class<?>[] argTypes, final Object[] args) throws Throwable
@@ -185,7 +185,7 @@ public class NativeInvocationHandler
     {
         Class<?> search = type;
         IllegalStateException ex = null;
-        while (search != null && !NativeInterceptorAgent.isExcluded(search.getName()))
+        while (search != null && !NativeInterceptorAgent.isExcluded(search.getName().replace('.', '/')))
         {
             try
             {
