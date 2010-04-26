@@ -75,6 +75,7 @@ public class NativeInterceptor
             else
             {
                 NativeInterceptorAgent.getInstrumentation().retransformClasses(type);
+                NativeInvocationHandler.registerHandler(type, handler);
             }
         }
         catch (final UnmodifiableClassException e)

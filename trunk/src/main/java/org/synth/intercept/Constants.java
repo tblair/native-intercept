@@ -30,6 +30,11 @@ public class Constants
     public static final Type RUNTIME_EXCEPTION_TYPE = Type.getType(RuntimeException.class);
 
     /**
+     * Type for the {@link Error} class.
+     */
+    public static final Type ERROR_TYPE = Type.getType(Error.class);
+
+    /**
      * Type for the {@link IllegalStateException} class.
      */
     public static final Type ILLEGAL_STATE_EXCEPTION_TYPE = Type.getType(IllegalStateException.class);

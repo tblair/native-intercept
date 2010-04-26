@@ -32,8 +32,8 @@ public class NativeWrappingTransformer implements ClassFileTransformer
      */
     @Override
     public byte[] transform(final ClassLoader loader, final String className, final Class<?> classBeingRedefined,
-                            final ProtectionDomain protectionDomain, final byte[] classfileBuffer) throws IllegalClassFormatException
-    {
+            final ProtectionDomain protectionDomain, final byte[] classfileBuffer) throws IllegalClassFormatException
+            {
         // This check prevents re-transformation of an already transformed class. Also check for
         // system classes that shouldn't be instrumented.
         if (classBeingRedefined != null || NativeInterceptorAgent.isExcluded(className))
@@ -64,10 +64,10 @@ public class NativeWrappingTransformer implements ClassFileTransformer
             t.printStackTrace(new PrintWriter(toString));
             // log the error.
             NativeWrappingTransformer.LOG.severe(
-                "Error while transforming class for intercepting:\n" + toString);
+                    "Error while transforming class for intercepting:\n" + toString);
             // runtime exceptions don't need to be wrapped, checked exceptions do
             throw t instanceof RuntimeException ?
-                (RuntimeException)t : new RuntimeException("Error while transforming class for intercepting", t);
+                    (RuntimeException)t : new RuntimeException("Error while transforming class for intercepting", t);
         }
-    }
+            }
 }
