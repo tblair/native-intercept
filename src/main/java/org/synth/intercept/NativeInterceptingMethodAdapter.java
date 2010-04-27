@@ -224,7 +224,6 @@ public class NativeInterceptingMethodAdapter extends GeneratorAdapter
             super.visitMethodInsn(opcode, owner, name, desc);
             return;
         }
-        System.out.println("Transforming to intercept: " + this.type + '#' + this.name);
         // Tell the parent that the bytecode is modified to intercept the native method.
         this.parent.setIntercepted();
         // Add the @Intercepted annotation to indicate that the method is intercepted.
